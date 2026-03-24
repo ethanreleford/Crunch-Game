@@ -1,6 +1,12 @@
-extends Node
+extends Control
 
 @export_enum("Steam", "ENet") var net_mode : String = "Steam"
+
+@onready var scroll_container: ScrollContainer = $ScrollContainer
+@onready var player_list_container: VBoxContainer = $ScrollContainer/VBoxContainer
+@export var player_row_scene : PackedScene
+
+
 
 var lobby_id : int = 0 
 var peer 
@@ -30,8 +36,8 @@ func host_lobby():
 	if net_mode == "ENet":
 		peer.create_server(1027)
 		multiplayer.multiplayer_peer = peer
-		multiplayer.peer_connected.connect(_add_player)
-		multiplayer.peer_disconnected.connect(_remove_player)
+		multiplayer.peer_connected.connect(_add_player_to_ui)
+		multiplayer.peer_disconnected.connect(_remove_player_from_ui)
 		_add_player()
 	elif net_mode == "Steam":
 		Steam.createLobby(Steam.LobbyType.LOBBY_TYPE_PUBLIC, 16)
@@ -76,7 +82,35 @@ func _on_lobby_joined(lobby_id : int, permissions : int, locked : bool, response
 	is_joining = false
 	print("JOINED LOBBY: ", lobby_id)
 
+func _add_player_to_ui(id : int = 1) -> void:
+	# 1. Check if this player is already in the UI list
+	if player_list_container.has_node(str(id)):
+		return 
+		
+	# 2. Create the new row
+	var new_row = player_row_scene.instantiate()
+	new_row.name = str(id) # Matches the peer ID
 	
+	# 3. Set the Label text
+	var display_name = "Player: " + str(id)
+	
+	if net_mode == "Steam":
+		var steam_name = Steam.getFriendPersonaName(id)
+		if steam_name != "":
+			display_name = steam_name
+
+	# Access the label inside your PlayerRow.tscn
+	new_row.get_node("Label").text = display_name
+	
+	# 4. Add it to your VBoxContainer
+	player_list_container.add_child(new_row)
+
+func _remove_player_from_ui(id : int) -> void:
+	var row = player_list_container.get_node_or_null(str(id))
+	if row:
+		row.queue_free()
+	
+
 func _add_player(id : int = 1):
 	var player = player_scene.instantiate()
 	player.name = str(id)

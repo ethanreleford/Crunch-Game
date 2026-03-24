@@ -5,34 +5,40 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_bo1nx"]
 
-[node name="Main" type="Node2D"]
+[node name="Node2D" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 
 [node name="start_button" type="Button" parent="."]
-offset_left = 236.0
-offset_top = 4.0
-offset_right = 452.0
-offset_bottom = 98.0
+layout_mode = 0
+offset_left = 510.0
+offset_top = 159.0
+offset_right = 726.0
+offset_bottom = 253.0
 text = "START"
 
 [node name="host_button" type="Button" parent="."]
-offset_left = 2.0
-offset_top = 6.0
-offset_right = 217.0
-offset_bottom = 101.0
+layout_mode = 0
+offset_left = 511.0
+offset_top = 296.0
+offset_right = 726.0
+offset_bottom = 391.0
 text = "HOST"
 
 [node name="join_button" type="Button" parent="."]
-offset_left = 1.0
-offset_top = 115.0
-offset_right = 216.0
-offset_bottom = 210.0
+layout_mode = 0
+offset_left = 515.0
+offset_top = 429.0
+offset_right = 730.0
+offset_bottom = 524.0
 text = "JOIN"
 
 [node name="id_prompt" type="LineEdit" parent="."]
-offset_left = -1.0
-offset_top = 212.0
-offset_right = 216.0
-offset_bottom = 243.0
+layout_mode = 0
+offset_left = 516.0
+offset_top = 559.0
+offset_right = 733.0
+offset_bottom = 590.0
 placeholder_text = "Lobby ID"
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
@@ -40,8 +46,10 @@ _spawnable_scenes = PackedStringArray("uid://bs3afhje74i7g")
 spawn_path = NodePath("../Node")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
 
 [node name="Node" parent="." instance=ExtResource("1_jjgbg")]
+layout_mode = 0
 net_mode = "ENet"
 player_scene = ExtResource("2_bo1nx")
 
