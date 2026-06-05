@@ -1,6 +1,7 @@
 extends Control
 
 @onready var name_input: LineEdit = $NameInput
+@onready var status_label: Label = $StatusLabel
 
 func _on_create_pressed():
 	var raw := name_input.text.strip_edges()
@@ -15,7 +16,7 @@ func _on_create_pressed():
 			hosted = true
 			break
 	if not hosted:
-		push_error("No available port in range 1027-1037")
+		status_label.text = "Error: No available port in range 1027-1037."
 		return
 	multiplayer.multiplayer_peer = peer
 	get_tree().change_scene_to_file("res://Scenes/HostLobby.tscn")

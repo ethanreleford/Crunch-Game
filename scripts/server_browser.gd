@@ -1,6 +1,8 @@
 extends Control
 
 @onready var server_list: VBoxContainer = $ScrollContainer/VBoxContainer
+@onready var direct_ip_input: LineEdit = $DirectIPInput
+@onready var status_label: Label = $StatusLabel
 
 var discover_peer: PacketPeerUDP
 var ping_timer: Timer
@@ -62,11 +64,27 @@ func _join_server(ip: String, port: int):
 	multiplayer.connected_to_server.connect(_on_connected, CONNECT_ONE_SHOT)
 	multiplayer.connection_failed.connect(_on_connection_failed, CONNECT_ONE_SHOT)
 
+func _on_connect_pressed():
+	var text = direct_ip_input.text.strip_edges()
+	if text.is_empty():
+		return
+	var ip := "127.0.0.1"
+	var port := 1027
+	if ":" in text:
+		var parts = text.split(":", false, 1)
+		ip = parts[0]
+		port = parts[1].to_int() if parts.size() > 1 else 1027
+	else:
+		ip = text
+	status_label.text = "Connecting to %s:%d..." % [ip, port]
+	_join_server(ip, port)
+
 func _on_connected():
 	get_tree().change_scene_to_file("res://Scenes/HostLobby.tscn")
 
 func _on_connection_failed():
 	multiplayer.multiplayer_peer = null
+	status_label.text = "Connection failed."
 	_start_discovery()
 
 func _on_refresh_pressed():

@@ -52,5 +52,13 @@ offset_right = 520.0
 offset_bottom = 480.0
 text = "BACK"
 
+[node name="StatusLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 495.0
+offset_right = 940.0
+offset_bottom = 535.0
+horizontal_alignment = 1
+
 [connection signal="pressed" from="CreateButton" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="BackButton" to="." method="_on_back_pressed"]

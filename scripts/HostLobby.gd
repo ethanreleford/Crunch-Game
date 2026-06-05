@@ -31,6 +31,7 @@ func _ready():
 			lobby_code_label.text = "%s  —  %s : %d" % [GameState.server_name, _get_local_ip(), GameState.server_port]
 	else:
 		_submit_name.rpc_id(1, _get_my_name())
+		lobby_code_label.text = "Waiting for host to start..."
 
 func _process(_delta: float):
 	if not discovery_peer:
