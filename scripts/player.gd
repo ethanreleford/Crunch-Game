@@ -9,6 +9,7 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
+@onready var health_bar: ProgressBar = $HUD/Control/HealthBar
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(name.to_int())
@@ -19,6 +20,14 @@ func _ready() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		spring_arm.rotation.x = deg_to_rad(-20.0)
 		camera.make_current()
+		health_bar.max_value = max_health
+		health_bar.value = health
+		health_changed.connect(_on_health_changed)
+	else:
+		$HUD.visible = false
+
+func _on_health_changed(new_health: float) -> void:
+	health_bar.value = new_health
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
