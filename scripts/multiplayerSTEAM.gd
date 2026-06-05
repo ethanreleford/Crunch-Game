@@ -1,137 +1,40 @@
 extends Control
 
-@export_enum("Steam", "ENet") var net_mode : String = "Steam"
+@export_enum("Steam", "ENet") var net_mode: String = "ENet"
 
-@onready var scroll_container: ScrollContainer = $ScrollContainer
-@onready var player_list_container: VBoxContainer = $ScrollContainer/VBoxContainer
-@export var player_row_scene : PackedScene
-
-
-
-var lobby_id : int = 0 
-var peer 
-@export var player_scene : PackedScene
-var is_host : bool = false
-
-var is_joining : bool = false
-@onready var start_button: Button = $"../start_button"
-@onready var join_button: Button = $"../join_button"
-@onready var host_button: Button = $"../host_button"
-@onready var id_prompt: LineEdit = $"../id_prompt"
-
+var peer
 
 func _ready():
-	if net_mode == "ENet":
-		peer = ENetMultiplayerPeer.new()
-	elif net_mode == "Steam":
+	if net_mode == "Steam":
 		peer = SteamMultiplayerPeer.new()
 		print("Steam Initialized: ", Steam.steamInit(480, true))
 		Steam.initRelayNetworkAccess()
 		Steam.lobby_created.connect(_on_lobby_created)
 		Steam.lobby_joined.connect(_on_lobby_joined)
-	
-	
-func host_lobby():
-	is_host = true
-	if net_mode == "ENet":
-		peer.create_server(1027)
-		multiplayer.multiplayer_peer = peer
-		multiplayer.peer_connected.connect(_add_player_to_ui)
-		multiplayer.peer_disconnected.connect(_remove_player_from_ui)
-		_add_player()
-	elif net_mode == "Steam":
-		Steam.createLobby(Steam.LobbyType.LOBBY_TYPE_PUBLIC, 16)
-	
-func _on_lobby_created(result : int, lobby_id : int):
+
+func _on_lobby_created(result: int, lobby_id: int):
 	if result == Steam.Result.RESULT_OK:
-		self.lobby_id = lobby_id
-		
 		peer = SteamMultiplayerPeer.new()
 		peer.server_relay = true
 		peer.create_host()
-		
 		multiplayer.multiplayer_peer = peer
-		multiplayer.peer_connected.connect(_add_player)
-		multiplayer.peer_disconnected.connect(_remove_player)
-		_add_player()
-		print("LOBBY CREATED, LOBBY ID: ", lobby_id)
+		get_tree().change_scene_to_file("res://Scenes/HostLobby.tscn")
 
-func join_lobby(lobby_id : int = 0):
-	is_joining = true
-	
-	if net_mode == "ENet":
-		peer.create_client("127.0.0.1", 1027)
-		multiplayer.multiplayer_peer = peer
-	elif net_mode == "Steam":
-		Steam.joinLobby(lobby_id)
-
-func _on_lobby_joined(lobby_id : int, permissions : int, locked : bool, response : int):
-	if !is_joining:
-		return
-	
-	self.lobby_id = lobby_id
+func _on_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, _response: int):
 	peer = SteamMultiplayerPeer.new()
 	peer.server_relay = true
-	
-	# Connect signals for the client so they can spawn other players
-	multiplayer.peer_connected.connect(_add_player)
-	multiplayer.peer_disconnected.connect(_remove_player)
-	
 	peer.create_client(Steam.getLobbyOwner(lobby_id))
 	multiplayer.multiplayer_peer = peer
-	is_joining = false
-	print("JOINED LOBBY: ", lobby_id)
+	multiplayer.connected_to_server.connect(_on_connected)
 
-func _add_player_to_ui(id : int = 1) -> void:
-	# 1. Check if this player is already in the UI list
-	if player_list_container.has_node(str(id)):
-		return 
-		
-	# 2. Create the new row
-	var new_row = player_row_scene.instantiate()
-	new_row.name = str(id) # Matches the peer ID
-	
-	# 3. Set the Label text
-	var display_name = "Player: " + str(id)
-	
-	if net_mode == "Steam":
-		var steam_name = Steam.getFriendPersonaName(id)
-		if steam_name != "":
-			display_name = steam_name
-
-	# Access the label inside your PlayerRow.tscn
-	new_row.get_node("Label").text = display_name
-	
-	# 4. Add it to your VBoxContainer
-	player_list_container.add_child(new_row)
-
-func _remove_player_from_ui(id : int) -> void:
-	var row = player_list_container.get_node_or_null(str(id))
-	if row:
-		row.queue_free()
-	
-
-func _add_player(id : int = 1):
-	var player = player_scene.instantiate()
-	player.name = str(id)
-	call_deferred("add_child", player)
-	
-func _remove_player(id : int):
-	if !self.has_node(str(id)):
-		return
-		
-	self.get_node(str(id)).queue_free()
-	
-	
-func _on_start_button_pressed() -> void:
-	pass # Replace with function body.
+func _on_connected():
+	get_tree().change_scene_to_file("res://Scenes/HostLobby.tscn")
 
 func _on_host_button_pressed() -> void:
-	host_lobby()
+	if net_mode == "ENet":
+		get_tree().change_scene_to_file("res://Scenes/CreateServer.tscn")
+	elif net_mode == "Steam":
+		Steam.createLobby(Steam.LobbyType.LOBBY_TYPE_PUBLIC, 16)
 
 func _on_join_button_pressed() -> void:
-	join_lobby(id_prompt.text.to_int())
-
-
-func _on_id_prompt_text_changed(new_text: String) -> void:
-	join_button.disabled = (new_text.length() == 0)
+	get_tree().change_scene_to_file("res://Scenes/ServerBrowser.tscn")

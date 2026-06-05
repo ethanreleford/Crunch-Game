@@ -1,0 +1,56 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/create_server.gd" id="1_cs"]
+
+[node name="CreateServer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cs")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 440.0
+offset_top = 100.0
+offset_right = 840.0
+offset_bottom = 150.0
+text = "Create Server"
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 260.0
+offset_right = 600.0
+offset_bottom = 300.0
+text = "Server Name:"
+
+[node name="NameInput" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 310.0
+offset_right = 940.0
+offset_bottom = 360.0
+placeholder_text = "Enter server name..."
+max_length = 32
+
+[node name="CreateButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 420.0
+offset_right = 740.0
+offset_bottom = 480.0
+text = "CREATE"
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 420.0
+offset_right = 520.0
+offset_bottom = 480.0
+text = "BACK"
+
+[connection signal="pressed" from="CreateButton" to="." method="_on_create_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_pressed"]
