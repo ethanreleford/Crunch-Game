@@ -30,6 +30,9 @@ func _on_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, _response
 func _on_connected():
 	get_tree().change_scene_to_file("res://Scenes/HostLobby.tscn")
 
+func _on_start_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://Scenes/main_3D_Map.tscn")
+
 func _on_host_button_pressed() -> void:
 	if net_mode == "ENet":
 		get_tree().change_scene_to_file("res://Scenes/CreateServer.tscn")
