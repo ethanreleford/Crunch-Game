@@ -10,7 +10,6 @@ func _ready():
 		print("Steam Initialized: ", Steam.steamInit(480, true))
 		Steam.initRelayNetworkAccess()
 		Steam.lobby_created.connect(_on_lobby_created)
-		Steam.lobby_joined.connect(_on_lobby_joined)
 
 func _on_lobby_created(result: int, lobby_id: int):
 	if result == Steam.Result.RESULT_OK:
