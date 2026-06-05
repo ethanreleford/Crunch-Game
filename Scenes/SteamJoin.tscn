@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/steam_join.gd" id="1_sj"]
+
+[node name="SteamJoin" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sj")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 440.0
+offset_top = 80.0
+offset_right = 840.0
+offset_bottom = 130.0
+text = "Join Steam Lobby"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 150.0
+offset_right = 940.0
+offset_bottom = 190.0
+horizontal_alignment = 1
+
+[node name="LobbyInput" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 220.0
+offset_right = 940.0
+offset_bottom = 270.0
+placeholder_text = "Enter Lobby ID"
+
+[node name="JoinButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 310.0
+offset_right = 740.0
+offset_bottom = 370.0
+text = "JOIN"
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 310.0
+offset_right = 520.0
+offset_bottom = 370.0
+text = "BACK"
+
+[connection signal="text_changed" from="LobbyInput" to="." method="_on_lobby_input_text_changed"]
+[connection signal="pressed" from="JoinButton" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_pressed"]

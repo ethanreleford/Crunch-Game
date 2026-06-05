@@ -2,6 +2,7 @@ extends Control
 
 @onready var player_list: VBoxContainer = $ScrollContainer/VBoxContainer
 @onready var start_button: Button = $StartButton
+@onready var lobby_code_label: Label = $LobbyCodeLabel
 @export var player_row_scene: PackedScene
 
 var players: Dictionary = {}
@@ -19,7 +20,9 @@ func _ready():
 	_refresh_list()
 
 	if multiplayer.is_server():
-		if not (multiplayer.multiplayer_peer is SteamMultiplayerPeer):
+		if multiplayer.multiplayer_peer is SteamMultiplayerPeer:
+			lobby_code_label.text = "Lobby ID: %d" % GameState.steam_lobby_id
+		else:
 			server_id = str(randi())
 			discovery_peer = PacketPeerUDP.new()
 			for port in range(4567, 4578):
