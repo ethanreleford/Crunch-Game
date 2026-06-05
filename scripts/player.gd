@@ -11,11 +11,10 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(id if id > 0 else 1)
 
 func _ready() -> void:
-	super._ready()
 	if is_multiplayer_authority():
-		health_bar.max_value = max_health
-		health_bar.value = health
-		health_changed.connect(_on_health_changed)
+		health_bar.max_value = health_component.max_health
+		health_bar.value = health_component.health
+		health_component.health_changed.connect(_on_health_changed)
 	else:
 		$HUD.visible = false
 
