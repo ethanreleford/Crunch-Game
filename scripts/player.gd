@@ -1,14 +1,9 @@
 extends Entity
 
 const JUMP_VELOCITY = 4.5
-const MOUSE_SENSITIVITY = 0.003
-const CAMERA_PITCH_MIN = -40.0
-const CAMERA_PITCH_MAX = 60.0
 
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-@onready var spring_arm: SpringArm3D = $SpringArm3D
-@onready var camera: Camera3D = $SpringArm3D/Camera3D
 @onready var health_bar: ProgressBar = $HUD/Control/HealthBar
 
 func _enter_tree() -> void:
@@ -18,9 +13,6 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	super._ready()
 	if is_multiplayer_authority():
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		spring_arm.rotation.x = deg_to_rad(-20.0)
-		camera.make_current()
 		health_bar.max_value = max_health
 		health_bar.value = health
 		health_changed.connect(_on_health_changed)
@@ -29,18 +21,6 @@ func _ready() -> void:
 
 func _on_health_changed(new_health: float) -> void:
 	health_bar.value = new_health
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not is_multiplayer_authority():
-		return
-	if event is InputEventMouseMotion:
-		rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
-		spring_arm.rotate_x(-event.relative.y * MOUSE_SENSITIVITY)
-		spring_arm.rotation.x = clamp(
-			spring_arm.rotation.x,
-			deg_to_rad(CAMERA_PITCH_MIN),
-			deg_to_rad(CAMERA_PITCH_MAX)
-		)
 
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority():
