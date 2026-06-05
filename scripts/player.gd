@@ -12,7 +12,8 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var health_bar: ProgressBar = $HUD/Control/HealthBar
 
 func _enter_tree() -> void:
-	set_multiplayer_authority(name.to_int())
+	var id := name.to_int()
+	set_multiplayer_authority(id if id > 0 else 1)
 
 func _ready() -> void:
 	super._ready()
