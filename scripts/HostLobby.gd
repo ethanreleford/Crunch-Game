@@ -28,6 +28,7 @@ func _ready():
 			for port in range(4567, 4578):
 				if discovery_peer.bind(port) == OK:
 					break
+			lobby_code_label.text = "%s  —  %s : %d" % [GameState.server_name, _get_local_ip(), GameState.server_port]
 	else:
 		_submit_name.rpc_id(1, _get_my_name())
 
@@ -41,6 +42,12 @@ func _process(_delta: float):
 		var response = JSON.stringify({"name": GameState.server_name, "port": GameState.server_port, "id": server_id}).to_utf8_buffer()
 		discovery_peer.set_dest_address(requester_ip, requester_port)
 		discovery_peer.put_packet(response)
+
+func _get_local_ip() -> String:
+	for addr in IP.get_local_addresses():
+		if addr.begins_with("192.") or addr.begins_with("10.") or addr.begins_with("172."):
+			return addr
+	return "127.0.0.1"
 
 func _get_my_name() -> String:
 	if multiplayer.multiplayer_peer is SteamMultiplayerPeer:
