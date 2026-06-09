@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://cwpmb80jxvq62"]
+
+[ext_resource type="Script" uid="uid://4kxws6vh62pl" path="res://scripts/game.gd" id="1_c7orp"]
+[ext_resource type="PackedScene" uid="uid://bs3afhje74i7g" path="res://Scenes/player.tscn" id="2_51tf3"]
+[ext_resource type="PackedScene" path="res://Scenes/enemy.tscn" id="3_51tf3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_51tf3"]
+albedo_color = Color(0.08235294, 0, 0.24705882, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6acau"]
+material = SubResource("StandardMaterial3D_51tf3")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_doojg"]
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_c7orp")
+player_scene = ExtResource("2_51tf3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(40, 0, 0, 0, 40, 0, 0, 0, 40, 0, -19.454493, 0)
+mesh = SubResource("BoxMesh_6acau")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_doojg")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(40, 0, 0, 0, 40, 0, 0, 0, 40, 28.88704, 4.047947, 0)
+mesh = SubResource("BoxMesh_6acau")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D"]
+shape = SubResource("BoxShape3D_doojg")
+
+[node name="Enemy" parent="." instance=ExtResource("3_51tf3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.490049, 3.6862001, 0)
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://bs3afhje74i7g")
+spawn_path = NodePath("..")

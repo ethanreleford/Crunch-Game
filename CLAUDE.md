@@ -16,29 +16,41 @@ This is a 3D multiplayer game (Godot 4.5, Forward Plus) with dual-backend networ
 
 ```
 main.tscn (Start / Host / Join)
-  → Start: main_3D_Map.tscn (solo/direct)
-  → Host: CreateServer.tscn (name input + create) → HostLobby.tscn
-  → Join: ServerBrowser.tscn (UDP discovery list) → HostLobby.tscn
-      → Start (host only): main_3D_Map.tscn
+  → Start: TestingEnemies.tscn (solo/sandbox)
+  → Host (ENet):  CreateServer.tscn → HostLobby.tscn → main_3D_Map.tscn
+  → Host (Steam): (lobby created in-place) → HostLobby.tscn → main_3D_Map.tscn
+  → Join (ENet):  ServerBrowser.tscn (UDP discovery) → HostLobby.tscn → main_3D_Map.tscn
+  → Join (Steam): SteamJoin.tscn (lobby ID input)   → HostLobby.tscn → main_3D_Map.tscn
 ```
 
-### Key Scripts
+### Gameplay Entity Hierarchy
 
-- **`scripts/multiplayerSTEAM.gd`** — Attached to `multiplayerSceneSteam.tscn`, instanced inside `main.tscn`. Handles ENet and Steam via `net_mode` export. For ENet, Host button navigates to `CreateServer.tscn`. For Steam, triggers `Steam.createLobby`. Join button goes to `ServerBrowser.tscn`.
-- **`scripts/GameState.gd`** — Static class (no autoload needed). Holds `server_port: int` and `server_name: String` so values survive scene changes. Written by `create_server.gd`, read by `HostLobby.gd`.
-- **`scripts/create_server.gd`** — Shown before hosting. Reads server name from `LineEdit`, tries ENet ports 1027–1037 until one succeeds (`create_server()` returns `OK`), stores result in `GameState`, then navigates to `HostLobby.tscn`. Each port attempt requires a fresh `ENetMultiplayerPeer` — a failed `create_server()` corrupts the object.
-- **`scripts/HostLobby.gd`** — Lobby controller. Shows player list via RPC-synced dictionary (`players: Dictionary`). Host tries UDP discovery ports 4567–4577 until `bind()` succeeds, responds to pings with `GameState.server_name` and `GameState.server_port`. Start button only visible to host. Leave closes the peer; all clients return to main menu via `server_disconnected`.
-- **`scripts/server_browser.gd`** — Binds a random UDP port, sends "discover" pings to `127.0.0.1` and `255.255.255.255` across ports 4567–4577 every second (to reach multiple servers on the same machine). Deduplicates responses by `id` field. On join failure (`connection_failed`), resets the peer and restarts discovery.
+All game actors use composition via `HealthComponent`:
+
+- **`scripts/entity.gd`** (`Entity extends CharacterBody3D`) — base for all moving actors. Holds `speed` export and a `$HealthComponent` reference. Exposes `take_damage(amount)`.
+- **`scripts/health_component.gd`** (`HealthComponent extends Node`) — tracks `health`/`max_health`, emits `health_changed(new_health)` and `died`, calls `queue_free()` on the parent when health reaches zero.
+- **`scripts/enemy.gd`** (`Enemy extends Entity`) — stub class; game-specific behaviour will be added here.
+- **`scripts/tower.gd`** (`Tower extends StaticBody3D`) — placed defences. Exports `cost`, `damage`, `range`, `attack_speed`. Owns its own `$HealthComponent` and delegates `take_damage` to it (same pattern as Entity, but StaticBody3D not CharacterBody3D).
+- **`scripts/player.gd`** (extends `Entity`) — sets `multiplayer_authority` from node name in `_enter_tree`. Connects `health_component.health_changed` to update the on-screen `$HUD/Control/HealthBar` (authority only). Only authority processes input/physics.
+- **`scripts/camera_controller.gd`** (extends `SpringArm3D`) — handles mouse-look for the authority player. Excludes parent body from SpringArm collision. Captures mouse and calls `camera.make_current()` only for the authority peer.
+
+### Key Networking Scripts
+
+- **`scripts/multiplayerSTEAM.gd`** — Attached to `multiplayerSceneSteam.tscn`, instanced inside `main.tscn`. Handles ENet and Steam via `net_mode` export. For ENet, Host navigates to `CreateServer.tscn`; Join navigates to `ServerBrowser.tscn`. For Steam, Host triggers `Steam.createLobby`; Join navigates to `SteamJoin.tscn`.
+- **`scripts/GameState.gd`** — Static class (no autoload needed). Holds `server_port`, `server_name`, and `steam_lobby_id` so values survive scene changes. Written by `create_server.gd` (ENet) or `multiplayerSTEAM.gd` (Steam), read by `HostLobby.gd`.
+- **`scripts/create_server.gd`** — Tries ENet ports 1027–1037 until one succeeds, stores result in `GameState`, then navigates to `HostLobby.tscn`. Each port attempt requires a fresh `ENetMultiplayerPeer` — a failed `create_server()` corrupts the object.
+- **`scripts/HostLobby.gd`** — Lobby controller for both backends. Shows player list via RPC-synced `players: Dictionary`. ENet host binds UDP discovery ports 4567–4577 and responds to pings. Steam host shows `GameState.steam_lobby_id` as lobby code. Start button only visible to host; triggers `_start_game.rpc()` → all peers change scene to `main_3D_Map.tscn`.
+- **`scripts/server_browser.gd`** — ENet only. Binds a random UDP port, sends "discover" pings to `127.0.0.1` and `255.255.255.255` across ports 4567–4577 every second. Deduplicates responses by `id`. On join failure, resets the peer and restarts discovery.
+- **`scripts/steam_join.gd`** — Steam only. Accepts a lobby ID in a `LineEdit`, calls `Steam.joinLobby`, creates a `SteamMultiplayerPeer` client on `lobby_joined`, then navigates to `HostLobby.tscn` on connection success.
 - **`scripts/game.gd`** — Attached to `main_3D_Map.tscn` root. Server spawns a player for each peer via `add_child` (name = peer ID string), then sends `_set_spawn_position` RPC to each client. Spawn positions are `Vector3(index * 5.0, 3.0, 0.0)`. Client is authority for their own player — setting position server-side gets overwritten.
-- **`scripts/player.gd`** — `CharacterBody3D`. Sets `multiplayer_authority` from node name (peer ID) in `_enter_tree`. Enables `Camera3D` only for the authority player. Only authority processes input/physics.
 
 ### Multi-Server on Same Machine
 
-ENet ports (1027–1037) and UDP discovery ports (4567–4577) are tried in sequence until one binds successfully. This allows multiple servers to run on the same machine simultaneously. The first `create_server()` attempt on port 1027 will print a C++ ENet error to the console — this is expected and harmless when port 1027 is already in use.
+ENet ports (1027–1037) and UDP discovery ports (4567–4577) are tried in sequence until one binds successfully. The first `create_server()` attempt on port 1027 prints a C++ ENet error when that port is already in use — expected and harmless.
 
 ### Player Replication
 
-`Scenes/player.tscn`: `CharacterBody3D` → `MultiplayerSynchronizer` (replicates `position`, spawn=true) + `SpringArm3D/Camera3D`. Players are spawned by the server via `add_child`. `MultiplayerSpawner` in `main_3D_Map.tscn` has `_spawnable_scenes = [player.tscn]` and `spawn_path = ".."`. Spawn positions are sent via RPC to each client after spawning — do not set position before `add_child` as clients (being authority) overwrite it.
+`Scenes/player.tscn`: `Entity (CharacterBody3D)` → `HealthComponent` + `MultiplayerSynchronizer` (replicates `position`, spawn=true) + `SpringArm3D (camera_controller.gd)/Camera3D` + `HUD`. Players are spawned by the server via `add_child`. `MultiplayerSpawner` in `main_3D_Map.tscn` has `_spawnable_scenes = [player.tscn]`. Spawn positions are sent via RPC to each client after spawning — do not set position before `add_child` as the authority client will overwrite it.
 
 ### UDP Discovery Protocol
 

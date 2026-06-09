@@ -1,23 +1,48 @@
 extends SpringArm3D
 
-const MOUSE_SENSITIVITY = 0.003
-const PITCH_MIN = -40.0
-const PITCH_MAX = 60.0
+@export var mouse_sensitivity: float = 0.003
+@export var zoom_speed: float = 1.0
+@export var zoom_min: float = 1.5
+@export var zoom_max: float = 8.0
+@export var pitch_min: float = -75.0
+@export var pitch_max: float = 75.0
+@export var camera_radius: float = 0.2
 
+@onready var _pivot: Node3D = get_parent()
+@onready var _player: CharacterBody3D = _pivot.get_parent()
 @onready var camera: Camera3D = $Camera3D
 
 func _ready() -> void:
-	add_excluded_object(get_parent().get_rid())
-	if not get_parent().is_multiplayer_authority():
+	var sphere := SphereShape3D.new()
+	sphere.radius = camera_radius
+	shape = sphere
+	margin = camera_radius
+	add_excluded_object(_player.get_rid())
+	if not _player.is_multiplayer_authority():
 		return
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	rotation.x = deg_to_rad(-20.0)
 	camera.make_current()
 
 func _input(event: InputEvent) -> void:
-	if not get_parent().is_multiplayer_authority():
+	if not _player.is_multiplayer_authority():
 		return
+
+	if event.is_action_pressed("ui_cancel") and not event.is_echo():
+		var captured := Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if captured else Input.MOUSE_MODE_CAPTURED
+		get_viewport().set_input_as_handled()
+		return
+
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		return
+
 	if event is InputEventMouseMotion:
-		get_parent().rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
-		rotate_x(-event.relative.y * MOUSE_SENSITIVITY)
-		rotation.x = clamp(rotation.x, deg_to_rad(PITCH_MIN), deg_to_rad(PITCH_MAX))
+		_pivot.rotate_y(-event.relative.x * mouse_sensitivity)
+		rotate_x(-event.relative.y * mouse_sensitivity)
+		rotation.x = clamp(rotation.x, deg_to_rad(pitch_min), deg_to_rad(pitch_max))
+	elif event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			spring_length = clamp(spring_length - zoom_speed, zoom_min, zoom_max)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			spring_length = clamp(spring_length + zoom_speed, zoom_min, zoom_max)
