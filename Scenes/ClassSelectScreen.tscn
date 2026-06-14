@@ -1,0 +1,85 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/class_select.gd" id="1_cs"]
+
+[node name="ClassSelectScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_cs")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="Title" type="Label" parent="VBox"]
+text = "Choose Your Class"
+horizontal_alignment = 1
+
+[node name="HSep1" type="HSeparator" parent="VBox"]
+
+[node name="Content" type="HBoxContainer" parent="VBox"]
+size_flags_vertical = 3
+
+[node name="BaseColumn" type="VBoxContainer" parent="VBox/Content"]
+custom_minimum_size = Vector2(180, 0)
+
+[node name="BaseHeader" type="Label" parent="VBox/Content/BaseColumn"]
+text = "Class"
+horizontal_alignment = 1
+
+[node name="BaseList" type="VBoxContainer" parent="VBox/Content/BaseColumn"]
+
+[node name="VSep1" type="VSeparator" parent="VBox/Content"]
+
+[node name="SubColumn" type="VBoxContainer" parent="VBox/Content"]
+custom_minimum_size = Vector2(180, 0)
+
+[node name="SubHeader" type="Label" parent="VBox/Content/SubColumn"]
+text = "Subclass"
+horizontal_alignment = 1
+
+[node name="SubList" type="VBoxContainer" parent="VBox/Content/SubColumn"]
+
+[node name="VSep2" type="VSeparator" parent="VBox/Content"]
+
+[node name="Stats" type="VBoxContainer" parent="VBox/Content"]
+size_flags_horizontal = 3
+
+[node name="NameLabel" type="Label" parent="VBox/Content/Stats"]
+text = "—"
+horizontal_alignment = 1
+
+[node name="HSepS1" type="HSeparator" parent="VBox/Content/Stats"]
+
+[node name="DescLabel" type="Label" parent="VBox/Content/Stats"]
+text = "Select a class to preview its stats."
+autowrap_mode = 3
+
+[node name="HSepS2" type="HSeparator" parent="VBox/Content/Stats"]
+
+[node name="StatsLabel" type="Label" parent="VBox/Content/Stats"]
+text = ""
+
+[node name="HSep2" type="HSeparator" parent="VBox"]
+
+[node name="Bottom" type="HBoxContainer" parent="VBox"]
+
+[node name="BackButton" type="Button" parent="VBox/Bottom"]
+text = "Back"
+
+[node name="Spacer" type="Control" parent="VBox/Bottom"]
+size_flags_horizontal = 3
+
+[node name="ConfirmButton" type="Button" parent="VBox/Bottom"]
+text = "Confirm"
+
+[connection signal="pressed" from="VBox/Bottom/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="VBox/Bottom/ConfirmButton" to="." method="_on_confirm_pressed"]

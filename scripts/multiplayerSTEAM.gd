@@ -5,6 +5,7 @@ extends Control
 var peer
 
 func _ready():
+	SettingsManager.load_and_apply()
 	if net_mode == "Steam":
 		peer = SteamMultiplayerPeer.new()
 		print("Steam Initialized: ", Steam.steamInit(480, true))
@@ -21,8 +22,7 @@ func _on_lobby_created(result: int, lobby_id: int):
 		get_tree().change_scene_to_file("res://Scenes/HostLobby.tscn")
 
 func _on_start_button_pressed() -> void:
-	# get_tree().change_scene_to_file("res://Scenes/main_3D_Map.tscn")
-	get_tree().change_scene_to_file("res://Scenes/TestingEnemies.tscn")
+	get_tree().change_scene_to_file("res://Scenes/ClassSelectScreen.tscn")
 
 func _on_host_button_pressed() -> void:
 	if net_mode == "ENet":

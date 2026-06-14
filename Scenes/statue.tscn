@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/statue.gd" id="1_statue"]
+[ext_resource type="Script" path="res://scripts/health_component.gd" id="2_health"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_statue"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_statue"]
+
+[node name="Statue" type="StaticBody3D"]
+script = ExtResource("1_statue")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_statue")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_statue")

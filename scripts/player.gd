@@ -13,8 +13,24 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(id if id > 0 else 1)
 
 func _ready() -> void:
-	speed = 5.0
-	max_health = 100.0
+	if is_multiplayer_authority():
+		var class_data := ClassRegistry.get_class_data(GameState.selected_class_id)
+		if class_data:
+			speed = class_data.speed
+			max_health = class_data.max_health
+		else:
+			speed = 5.0
+			max_health = 100.0
+	else:
+		var peer_id := name.to_int()
+		var class_id: String = GameState.player_class_ids.get(peer_id, "")
+		var class_data := ClassRegistry.get_class_data(class_id)
+		if class_data:
+			speed = class_data.speed
+			max_health = class_data.max_health
+		else:
+			speed = 5.0
+			max_health = 100.0
 	super._ready()
 	if is_multiplayer_authority():
 		health_bar.max_value = health_component.max_health

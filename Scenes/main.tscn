@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dnlkea4cqn20p"]
+[gd_scene load_steps=3 format=3 uid="uid://dnlkea4cqn20p"]
 
 [ext_resource type="PackedScene" uid="uid://bau8ox4eei035" path="res://Scenes/multiplayerSceneSteam.tscn" id="1_jjgbg"]
+[ext_resource type="PackedScene" path="res://Scenes/SettingsMenu.tscn" id="2_settings"]
 
 [node name="Node2D" type="Control"]
 layout_mode = 3
@@ -30,9 +31,20 @@ offset_right = 730.0
 offset_bottom = 524.0
 text = "JOIN"
 
+[node name="settings_button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 515.0
+offset_top = 561.0
+offset_right = 730.0
+offset_bottom = 656.0
+text = "SETTINGS"
+
 [node name="Node" parent="." instance=ExtResource("1_jjgbg")]
 layout_mode = 0
+
+[node name="SettingsMenu" parent="." instance=ExtResource("2_settings")]
 
 [connection signal="pressed" from="start_button" to="Node" method="_on_start_button_pressed"]
 [connection signal="pressed" from="host_button" to="Node" method="_on_host_button_pressed"]
 [connection signal="pressed" from="join_button" to="Node" method="_on_join_button_pressed"]
+[connection signal="pressed" from="settings_button" to="SettingsMenu" method="open"]

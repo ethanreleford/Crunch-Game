@@ -1,6 +1,5 @@
 extends SpringArm3D
 
-@export var mouse_sensitivity: float = 0.003
 @export var zoom_speed: float = 1.0
 @export var zoom_min: float = 1.5
 @export var zoom_max: float = 8.0
@@ -28,18 +27,12 @@ func _input(event: InputEvent) -> void:
 	if not _player.is_multiplayer_authority():
 		return
 
-	if event.is_action_pressed("ui_cancel") and not event.is_echo():
-		var captured := Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if captured else Input.MOUSE_MODE_CAPTURED
-		get_viewport().set_input_as_handled()
-		return
-
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return
 
 	if event is InputEventMouseMotion:
-		_pivot.rotate_y(-event.relative.x * mouse_sensitivity)
-		rotate_x(-event.relative.y * mouse_sensitivity)
+		_pivot.rotate_y(-event.relative.x * SettingsManager.mouse_sensitivity)
+		rotate_x(-event.relative.y * SettingsManager.mouse_sensitivity)
 		rotation.x = clamp(rotation.x, deg_to_rad(pitch_min), deg_to_rad(pitch_max))
 	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:

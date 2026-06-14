@@ -1,0 +1,110 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/settings_menu.gd" id="1_sm"]
+
+[node name="SettingsMenu" type="CanvasLayer"]
+layer = 10
+visible = false
+script = ExtResource("1_sm")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -240.0
+offset_right = 220.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="Panel/Margin/VBox"]
+
+[node name="AudioLbl" type="Label" parent="Panel/Margin/VBox"]
+text = "Audio"
+
+[node name="VolumeRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+
+[node name="VolumeLabel" type="Label" parent="Panel/Margin/VBox/VolumeRow"]
+text = "Master Volume"
+size_flags_horizontal = 3
+
+[node name="VolumeSlider" type="HSlider" parent="Panel/Margin/VBox/VolumeRow"]
+custom_minimum_size = Vector2(150, 0)
+size_flags_vertical = 4
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Sep2" type="HSeparator" parent="Panel/Margin/VBox"]
+
+[node name="VideoLbl" type="Label" parent="Panel/Margin/VBox"]
+text = "Video"
+
+[node name="FullscreenRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+
+[node name="FullscreenLabel" type="Label" parent="Panel/Margin/VBox/FullscreenRow"]
+text = "Fullscreen"
+size_flags_horizontal = 3
+
+[node name="FullscreenCheck" type="CheckButton" parent="Panel/Margin/VBox/FullscreenRow"]
+
+[node name="VSyncRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+
+[node name="VSyncLabel" type="Label" parent="Panel/Margin/VBox/VSyncRow"]
+text = "VSync"
+size_flags_horizontal = 3
+
+[node name="VSyncCheck" type="CheckButton" parent="Panel/Margin/VBox/VSyncRow"]
+button_pressed = true
+
+[node name="Sep3" type="HSeparator" parent="Panel/Margin/VBox"]
+
+[node name="ControlsLbl" type="Label" parent="Panel/Margin/VBox"]
+text = "Controls"
+
+[node name="SensRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+
+[node name="SensLabel" type="Label" parent="Panel/Margin/VBox/SensRow"]
+text = "Mouse Sensitivity"
+size_flags_horizontal = 3
+
+[node name="SensSlider" type="HSlider" parent="Panel/Margin/VBox/SensRow"]
+custom_minimum_size = Vector2(150, 0)
+size_flags_vertical = 4
+min_value = 0.001
+max_value = 0.010
+step = 0.0001
+value = 0.003
+
+[node name="Sep4" type="HSeparator" parent="Panel/Margin/VBox"]
+
+[node name="CloseBtn" type="Button" parent="Panel/Margin/VBox"]
+text = "Close"
+
+[connection signal="value_changed" from="Panel/Margin/VBox/VolumeRow/VolumeSlider" to="." method="_on_volume_changed"]
+[connection signal="toggled" from="Panel/Margin/VBox/FullscreenRow/FullscreenCheck" to="." method="_on_fullscreen_toggled"]
+[connection signal="toggled" from="Panel/Margin/VBox/VSyncRow/VSyncCheck" to="." method="_on_vsync_toggled"]
+[connection signal="value_changed" from="Panel/Margin/VBox/SensRow/SensSlider" to="." method="_on_sensitivity_changed"]
+[connection signal="pressed" from="Panel/Margin/VBox/CloseBtn" to="." method="_on_close_pressed"]

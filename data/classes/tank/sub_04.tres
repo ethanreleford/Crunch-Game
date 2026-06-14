@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player_class_data.gd" id="1_pcd"]
+
+[resource]
+script = ExtResource("1_pcd")
+class_id = "tank_04"
+display_name = "Coming Soon"
+base_class_id = "tank"
+description = "Coming soon."
+max_health = 300.0
+speed = 5.0
+base_damage = 10.0
+on_hit_effect = 0
+on_hit_dot_dps = 0.0
+on_hit_dot_duration = 0.0

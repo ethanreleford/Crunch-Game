@@ -27,12 +27,12 @@ main.tscn (Start / Host / Join)
 
 All game actors use composition via `HealthComponent`:
 
-- **`scripts/entity.gd`** (`Entity extends CharacterBody3D`) — base for all moving actors. Holds `speed` export and a `$HealthComponent` reference. Exposes `take_damage(amount)`.
+- **`scripts/entity.gd`** (`Entity extends CharacterBody3D`) — base for all moving actors. Holds `speed`/`max_health` exports and a `$HealthComponent` reference. Exposes `take_damage(amount)`. Has a `$DebugLabel` (Label3D) that shows current HP and speed; toggled by the `debug_stats` input action.
 - **`scripts/health_component.gd`** (`HealthComponent extends Node`) — tracks `health`/`max_health`, emits `health_changed(new_health)` and `died`, calls `queue_free()` on the parent when health reaches zero.
-- **`scripts/enemy.gd`** (`Enemy extends Entity`) — stub class; game-specific behaviour will be added here.
+- **`scripts/enemy.gd`** (`Enemy extends Entity`) — sets `speed=4.0`, `max_health=60.0`; applies gravity and calls `move_and_slide` each physics frame. AI targeting not yet implemented.
 - **`scripts/tower.gd`** (`Tower extends StaticBody3D`) — placed defences. Exports `cost`, `damage`, `range`, `attack_speed`. Owns its own `$HealthComponent` and delegates `take_damage` to it (same pattern as Entity, but StaticBody3D not CharacterBody3D).
-- **`scripts/player.gd`** (extends `Entity`) — sets `multiplayer_authority` from node name in `_enter_tree`. Connects `health_component.health_changed` to update the on-screen `$HUD/Control/HealthBar` (authority only). Only authority processes input/physics.
-- **`scripts/camera_controller.gd`** (extends `SpringArm3D`) — handles mouse-look for the authority player. Excludes parent body from SpringArm collision. Captures mouse and calls `camera.make_current()` only for the authority peer.
+- **`scripts/player.gd`** (extends `Entity`) — sets `multiplayer_authority` from node name in `_enter_tree`. Connects `health_component.health_changed` to update the on-screen `$HUD/Control/HealthBar` (authority only). Only authority processes input/physics. Movement direction is derived from `$CameraPivot.global_transform.basis`; mesh yaw tracks `$CameraPivot.rotation.y`.
+- **`scripts/camera_controller.gd`** (extends `SpringArm3D`) — sits inside `$CameraPivot` (Node3D under Entity). Handles mouse-look and scroll-wheel zoom for the authority player. Excludes player body from SpringArm collision. Captures mouse and calls `camera.make_current()` only for the authority peer. `ui_cancel` (Escape) toggles mouse capture.
 
 ### Key Networking Scripts
 
@@ -50,7 +50,7 @@ ENet ports (1027–1037) and UDP discovery ports (4567–4577) are tried in sequ
 
 ### Player Replication
 
-`Scenes/player.tscn`: `Entity (CharacterBody3D)` → `HealthComponent` + `MultiplayerSynchronizer` (replicates `position`, spawn=true) + `SpringArm3D (camera_controller.gd)/Camera3D` + `HUD`. Players are spawned by the server via `add_child`. `MultiplayerSpawner` in `main_3D_Map.tscn` has `_spawnable_scenes = [player.tscn]`. Spawn positions are sent via RPC to each client after spawning — do not set position before `add_child` as the authority client will overwrite it.
+`Scenes/player.tscn`: `Entity (CharacterBody3D)` → `HealthComponent` + `MultiplayerSynchronizer` (replicates `position`, spawn=true) + `CameraPivot (Node3D)` → `SpringArm3D (camera_controller.gd)` → `Camera3D` + `HUD`. Players are spawned by the server via `add_child`. `MultiplayerSpawner` in `main_3D_Map.tscn` has `_spawnable_scenes = [player.tscn]`. Spawn positions are sent via RPC to each client after spawning — do not set position before `add_child` as the authority client will overwrite it.
 
 ### UDP Discovery Protocol
 
@@ -63,7 +63,7 @@ Steam is initialized in `scripts/multiplayerSTEAM.gd._ready()` with app ID `480`
 
 ### Input Actions
 
-Defined in `project.godot`: `left`=A, `right`=D, `up`=W, `down`=S, `ui_accept`=Space (jump).
+Defined in `project.godot`: `left`=A, `right`=D, `up`=W, `down`=S, `ui_accept`=Space (jump), `ui_cancel`=Escape (toggle mouse capture), `debug_stats`=toggles the HP/speed Label3D on Entity.
 
 ### Terrain3D Addon
 
