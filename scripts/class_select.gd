@@ -1,7 +1,7 @@
 class_name ClassSelectScreen
 extends Control
 
-@export var destination: String = "res://Scenes/TestingEnemies.tscn"
+@export var destination: String = "res://Scenes/map.tscn"
 
 @onready var _base_list: VBoxContainer = $VBox/Content/BaseColumn/BaseList
 @onready var _sub_list: VBoxContainer = $VBox/Content/SubColumn/SubList

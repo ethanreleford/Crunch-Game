@@ -5,6 +5,7 @@ extends Node3D
 var _spawn_index: int = 0
 
 func _ready():
+	($EnemyMultiplayerSpawner as MultiplayerSpawner).spawn_function = _create_enemy
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 	if not multiplayer.is_server():
@@ -15,8 +16,14 @@ func _ready():
 	multiplayer.peer_connected.connect(_spawn_player)
 	multiplayer.peer_disconnected.connect(_remove_player)
 
+func _create_enemy(data: Dictionary) -> Object:
+	var enemy: Enemy = preload("res://Scenes/enemy.tscn").instantiate()
+	enemy.elite_level = data.get("elite_level", 0)
+	enemy.position = data.get("position", Vector3.ZERO)
+	return enemy
+
 func _spawn_player(id: int):
-	var pos = Vector3(_spawn_index * 5.0, 3.0, 0.0)
+	var pos = Vector3(_spawn_index * 5.0, 2.0, 10.0)
 	_spawn_index += 1
 	var player = player_scene.instantiate()
 	player.name = str(id)

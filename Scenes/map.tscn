@@ -1,0 +1,146 @@
+[gd_scene load_steps=19 format=3 uid="uid://biurqk5ruehbc"]
+
+[ext_resource type="Script" uid="uid://4kxws6vh62pl" path="res://scripts/game.gd" id="1_game"]
+[ext_resource type="PackedScene" uid="uid://bs3afhje74i7g" path="res://Scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://cth57g2k31qiw" path="res://scripts/enemy_spawner.gd" id="4_spawner"]
+[ext_resource type="Script" uid="uid://clv8okjry2i66" path="res://scripts/game_manager.gd" id="5_gamemanager"]
+[ext_resource type="Script" uid="uid://c08euean5eirt" path="res://scripts/spawn_point.gd" id="6_spawnpoint"]
+[ext_resource type="PackedScene" path="res://Scenes/GameHUD.tscn" id="7_gamehud"]
+[ext_resource type="PackedScene" path="res://Scenes/PauseMenu.tscn" id="8_pausemenu"]
+[ext_resource type="Script" uid="uid://cu7in37radbcc" path="res://scripts/house.gd" id="9_house"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.3, 0.55, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+material = SubResource("StandardMaterial3D_ground")
+size = Vector3(100, 1, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_walls"]
+albedo_color = Color(0.85, 0.78, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_ns"]
+material = SubResource("StandardMaterial3D_walls")
+size = Vector3(8.3, 4, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ns"]
+size = Vector3(8.3, 4, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_ew"]
+material = SubResource("StandardMaterial3D_walls")
+size = Vector3(0.3, 4, 8.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ew"]
+size = Vector3(0.3, 4, 8.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_roof"]
+albedo_color = Color(0.45, 0.2, 0.15, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_roof"]
+material = SubResource("StandardMaterial3D_roof")
+size = Vector3(9, 3, 9)
+
+[node name="Map" type="Node3D"]
+script = ExtResource("1_game")
+player_scene = ExtResource("2_player")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86602527, 0.3535535, -0.35355362, 0, 0.7071069, 0.70710665, 0.50000024, -0.6123722, 0.61237246, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ground")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="House" type="Node3D" parent="."]
+script = ExtResource("9_house")
+
+[node name="WallNorth" type="StaticBody3D" parent="House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="House/WallNorth"]
+mesh = SubResource("BoxMesh_wall_ns")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/WallNorth"]
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="WallSouth" type="StaticBody3D" parent="House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 4)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="House/WallSouth"]
+mesh = SubResource("BoxMesh_wall_ns")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/WallSouth"]
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="WallEast" type="StaticBody3D" parent="House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="House/WallEast"]
+mesh = SubResource("BoxMesh_wall_ew")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/WallEast"]
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="WallWest" type="StaticBody3D" parent="House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="House/WallWest"]
+mesh = SubResource("BoxMesh_wall_ew")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/WallWest"]
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="Roof" type="MeshInstance3D" parent="House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 0)
+mesh = SubResource("PrismMesh_roof")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://bs3afhje74i7g")
+spawn_path = NodePath("..")
+
+[node name="EnemyMultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("..")
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("5_gamemanager")
+
+[node name="GameHUD" parent="." instance=ExtResource("7_gamehud")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("8_pausemenu")]
+
+[node name="SpawnerNorth" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -40)
+script = ExtResource("4_spawner")
+
+[node name="SpawnPoint" type="Marker3D" parent="SpawnerNorth"]
+script = ExtResource("6_spawnpoint")
+
+[node name="SpawnerSouth" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 40)
+script = ExtResource("4_spawner")
+
+[node name="SpawnPoint" type="Marker3D" parent="SpawnerSouth"]
+script = ExtResource("6_spawnpoint")
+
+[node name="SpawnerEast" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 2, 0)
+script = ExtResource("4_spawner")
+
+[node name="SpawnPoint" type="Marker3D" parent="SpawnerEast"]
+script = ExtResource("6_spawnpoint")
+
+[node name="SpawnerWest" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 2, 0)
+script = ExtResource("4_spawner")
+
+[node name="SpawnPoint" type="Marker3D" parent="SpawnerWest"]
+script = ExtResource("6_spawnpoint")

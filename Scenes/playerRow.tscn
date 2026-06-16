@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://baqn3cawpynsf"]
+[gd_scene load_steps=0 format=3 uid="uid://baqn3cawpynsf"]
 
 [node name="Player_Row" type="HBoxContainer"]
 anchors_preset = 15

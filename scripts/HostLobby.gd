@@ -100,7 +100,7 @@ func _on_start_button_pressed():
 @rpc("authority", "call_local", "reliable")
 func _start_game():
 	_stop_discovery()
-	get_tree().change_scene_to_file("res://Scenes/main_3D_Map.tscn")
+	get_tree().change_scene_to_file("res://Scenes/map.tscn")
 
 func _on_leave_button_pressed():
 	_stop_discovery()
