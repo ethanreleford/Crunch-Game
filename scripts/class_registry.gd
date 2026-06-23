@@ -7,20 +7,11 @@ static func get_class_data(class_id: String) -> PlayerClassData:
 	_ensure_loaded()
 	return _classes.get(class_id, null)
 
-static func get_all_base_classes() -> Array[PlayerClassData]:
+static func get_all_classes() -> Array[PlayerClassData]:
 	_ensure_loaded()
 	var result: Array[PlayerClassData] = []
 	for c: PlayerClassData in _classes.values():
-		if c.is_base_class():
-			result.append(c)
-	return result
-
-static func get_subclasses(base_class_id: String) -> Array[PlayerClassData]:
-	_ensure_loaded()
-	var result: Array[PlayerClassData] = []
-	for c: PlayerClassData in _classes.values():
-		if c.base_class_id == base_class_id:
-			result.append(c)
+		result.append(c)
 	return result
 
 static func _ensure_loaded() -> void:

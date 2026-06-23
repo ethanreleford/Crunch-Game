@@ -4,13 +4,12 @@
 
 [resource]
 script = ExtResource("1_pcd")
-class_id = "healer_04"
-display_name = "Coming Soon"
-base_class_id = "healer"
-description = "Coming soon."
-max_health = 150.0
-speed = 5.0
-base_damage = 10.0
+class_id = "tank"
+display_name = "Tank"
+description = "Frontline brawler with massive health and heavy hits. Slow but unstoppable."
+max_health = 300.0
+speed = 3.5
+base_damage = 25.0
 on_hit_effect = 0
 on_hit_dot_dps = 0.0
 on_hit_dot_duration = 0.0

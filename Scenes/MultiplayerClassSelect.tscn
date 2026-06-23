@@ -1,0 +1,90 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbuqim64tbgfo"]
+
+[ext_resource type="Script" path="res://scripts/multiplayer_class_select.gd" id="1_mcs"]
+
+[node name="MultiplayerClassSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_mcs")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="ClassTitle" type="Label" parent="HBox/LeftPanel"]
+layout_mode = 2
+text = "Choose Your Class"
+horizontal_alignment = 1
+
+[node name="HSep1" type="HSeparator" parent="HBox/LeftPanel"]
+layout_mode = 2
+
+[node name="ClassList" type="VBoxContainer" parent="HBox/LeftPanel"]
+layout_mode = 2
+
+[node name="HSep2" type="HSeparator" parent="HBox/LeftPanel"]
+layout_mode = 2
+
+[node name="Stats" type="VBoxContainer" parent="HBox/LeftPanel"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="HBox/LeftPanel/Stats"]
+layout_mode = 2
+text = "—"
+horizontal_alignment = 1
+
+[node name="HSepS1" type="HSeparator" parent="HBox/LeftPanel/Stats"]
+layout_mode = 2
+
+[node name="DescLabel" type="Label" parent="HBox/LeftPanel/Stats"]
+layout_mode = 2
+text = "Select a class to preview its stats."
+autowrap_mode = 3
+
+[node name="HSepS2" type="HSeparator" parent="HBox/LeftPanel/Stats"]
+layout_mode = 2
+
+[node name="StatsLabel" type="Label" parent="HBox/LeftPanel/Stats"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="HBox/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ConfirmButton" type="Button" parent="HBox/LeftPanel"]
+layout_mode = 2
+text = "Lock In"
+
+[node name="VSep" type="VSeparator" parent="HBox"]
+layout_mode = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReadyTitle" type="Label" parent="HBox/RightPanel"]
+layout_mode = 2
+text = "Players"
+horizontal_alignment = 1
+
+[node name="HSepR" type="HSeparator" parent="HBox/RightPanel"]
+layout_mode = 2
+
+[node name="Checklist" type="VBoxContainer" parent="HBox/RightPanel"]
+layout_mode = 2
+
+[connection signal="pressed" from="HBox/LeftPanel/ConfirmButton" to="." method="_on_confirm_pressed"]

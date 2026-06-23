@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player_class_data.gd" id="1_pcd"]
+
+[resource]
+script = ExtResource("1_pcd")
+class_id = "support"
+display_name = "Support"
+description = "Utility class that weakens enemies on hit. Applies poison to soften targets for allies."
+max_health = 140.0
+speed = 5.0
+base_damage = 10.0
+on_hit_effect = 1
+on_hit_dot_dps = 3.0
+on_hit_dot_duration = 4.0

@@ -100,7 +100,9 @@ func _on_start_button_pressed():
 @rpc("authority", "call_local", "reliable")
 func _start_game():
 	_stop_discovery()
-	get_tree().change_scene_to_file("res://Scenes/map.tscn")
+	GameState.player_names = players
+	GameState.player_class_ids.clear()
+	get_tree().change_scene_to_file("res://Scenes/MultiplayerClassSelect.tscn")
 
 func _on_leave_button_pressed():
 	_stop_discovery()

@@ -4,13 +4,12 @@
 
 [resource]
 script = ExtResource("1_pcd")
-class_id = "wip_02"
-display_name = "Coming Soon"
-base_class_id = "wip"
-description = "Coming soon."
-max_health = 200.0
-speed = 5.0
-base_damage = 10.0
+class_id = "scout"
+display_name = "Scout"
+description = "Lightning-fast flanker with low health. Hits and runs before enemies react."
+max_health = 80.0
+speed = 8.5
+base_damage = 12.0
 on_hit_effect = 0
 on_hit_dot_dps = 0.0
 on_hit_dot_duration = 0.0

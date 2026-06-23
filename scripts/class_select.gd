@@ -3,8 +3,7 @@ extends Control
 
 @export var destination: String = "res://Scenes/map.tscn"
 
-@onready var _base_list: VBoxContainer = $VBox/Content/BaseColumn/BaseList
-@onready var _sub_list: VBoxContainer = $VBox/Content/SubColumn/SubList
+@onready var _class_list: VBoxContainer = $VBox/Content/ClassColumn/ClassList
 @onready var _name_label: Label = $VBox/Content/Stats/NameLabel
 @onready var _desc_label: Label = $VBox/Content/Stats/DescLabel
 @onready var _stats_label: Label = $VBox/Content/Stats/StatsLabel
@@ -14,21 +13,11 @@ var _selected_class: PlayerClassData = null
 
 func _ready() -> void:
 	_confirm_btn.disabled = true
-	for base_class in ClassRegistry.get_all_base_classes():
+	for class_data in ClassRegistry.get_all_classes():
 		var btn := Button.new()
-		btn.text = base_class.display_name
-		btn.pressed.connect(_on_base_selected.bind(base_class))
-		_base_list.add_child(btn)
-
-func _on_base_selected(base_class: PlayerClassData) -> void:
-	for child in _sub_list.get_children():
-		child.queue_free()
-	for sub in ClassRegistry.get_subclasses(base_class.class_id):
-		var btn := Button.new()
-		btn.text = sub.display_name
-		btn.pressed.connect(_show_stats.bind(sub))
-		_sub_list.add_child(btn)
-	_show_stats(base_class)
+		btn.text = class_data.display_name
+		btn.pressed.connect(_show_stats.bind(class_data))
+		_class_list.add_child(btn)
 
 func _show_stats(class_data: PlayerClassData) -> void:
 	_selected_class = class_data
